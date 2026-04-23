@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Services\ProductService;
-use App\Helpers\Response;
 use App\Exceptions\ValidationException;
 use App\Exceptions\NotFoundException;
 
@@ -16,22 +15,28 @@ class ProductController
         $this->service = $service;
     }
 
+    private function respuesta(array $data, int $codigo): void
+    {
+        http_response_code($codigo);
+        header('Content-Type: application/json');
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+
     /**
      * GET /productos - lista los productos
-     * @return void
      */
     public function index(): void
     {
         $products = $this->service->getAllProducts();
-        Response::json($products, 200);
+        $result = [];
+        foreach ($products as $p) {
+            $result[] = $p->toArray();
+        }
+        $this->respuesta($result, 200);
     }
 
     /**
-     * GET /productos/{id} - Trae el producto por id, sirve para el modificar
-     * @param int $id 
-     * @return void
-     * @throws ValidationException si el id no es positivo
-     * @throws NotFoundException si no encuentra el producto
+     * GET /productos/{id} - trae el producto por id
      */
     public function mostrar(int $id): void
     {
@@ -45,28 +50,16 @@ class ProductController
             throw new NotFoundException("Producto no encontrado");
         }
         
-        Response::json($product, 200);
+        $this->respuesta($product->toArray(), 200);
     }
 
     /**
-     * POST /productos para crear el producto
-     * 
-     * @return void
-     * @throws ValidationException si falla la validacion
+     * POST /productos - crea un producto
      */
     public function crear(): void
     {
-        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-        if (strpos($contentType, 'application/json') === false) {
-            throw new ValidationException("Content-Type debe ser application/json", 415);
-        }
-        
         $body = file_get_contents('php://input');
         $data = json_decode($body, true);
-        
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new ValidationException("JSON inválido en request body");
-        }
         
         if (!isset($data['nombre']) || trim($data['nombre']) === '') {
             throw new ValidationException("El nombre es obligatorio");
@@ -81,35 +74,21 @@ class ProductController
         }
         
         $product = $this->service->createProduct($data);
-        Response::json($product, 201);
+        $this->respuesta($product->toArray(), 201);
     }
 
     /**
-     * PUT /productos/{id} actualiza un producto existente
-     * 
-     * @param int $id
-     * @return void
-     * @throws ValidationException 
-     * @throws NotFoundException 
+     * PUT /productos/{id} - actualiza un producto existente
      */
     public function actualizar(int $id): void
     {
         if ($id <= 0) {
             throw new ValidationException("El id tiene que ser positivo");
         }
-        
-        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-        if (strpos($contentType, 'application/json') === false) {
-            throw new ValidationException("Content-Type debe ser application/json", 415);
-        }
 
         $body = file_get_contents('php://input');
         $data = json_decode($body, true);
         
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new ValidationException("JSON inválido en request body");
-        }
-
         if (isset($data['precio']) && (!is_numeric($data['precio']) || $data['precio'] <= 0)) {
             throw new ValidationException("El precio debe ser positivo");
         }
@@ -120,16 +99,11 @@ class ProductController
             throw new NotFoundException("Producto no encontrado");
         }
         
-        Response::json($product, 200);
+        $this->respuesta($product->toArray(), 200);
     }
 
     /**
-     * DELETE /productos/{id} borra el producto
-     * 
-     * @param int $id Product ID
-     * @return void
-     * @throws ValidationException
-     * @throws NotFoundException
+     * DELETE /productos/{id} - borra el producto
      */
     public function borrar(int $id): void
     {
@@ -143,6 +117,6 @@ class ProductController
             throw new NotFoundException("Producto no encontrado");
         }
         
-        Response::json(['message' => 'Producto eliminado exitosamente'], 200);
+        $this->respuesta(['message' => 'Producto eliminado exitosamente'], 200);
     }
 }

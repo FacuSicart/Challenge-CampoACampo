@@ -2,13 +2,13 @@
 
 namespace App\Repositories;
 
-use App\DTO\DTO;
+use App\Connection\Connection;
 
 class ProductRepository
 {
-    private DTO $db;
+    private Connection $db;
 
-    public function __construct(DTO $db)
+    public function __construct(Connection $db)
     {
         $this->db = $db;
     }

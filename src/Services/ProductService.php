@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Product;
 use App\Repositories\ProductRepository;
 
 class ProductService
@@ -17,23 +18,23 @@ class ProductService
 
     /**
      * obtiene todos los productos con conversión de precio
-     * @return array array de productos con precio_ars y precio_usd
+     * @return Product[]
      */
     public function getAllProducts(): array
     {
         $products = $this->repository->findAll();
         
         return array_map(function ($product) {
-            return $this->PriceProduct($product);
+            return $this->buildProduct($product);
         }, $products);
     }
 
     /**
-     * obtiene un producto por el ID con conversión de precio
+     * obtiene un producto por ID con conversión de precio
      * @param int $id
-     * @return array|null producto con precio_ars y precio_usd
+     * @return Product|null
      */
-    public function getProductById(int $id): ?array
+    public function getProductById(int $id): ?Product
     {
         $product = $this->repository->findById($id);
         
@@ -41,29 +42,29 @@ class ProductService
             return null;
         }
         
-        return $this->PriceProduct($product);
+        return $this->buildProduct($product);
     }
 
     /**
-     * crea un nuevo producto 
+     * crea un nuevo producto
      * @param array $data datos del producto (nombre, descripcion, precio)
-     * @return array producto creado con precio_ars y precio_usd
+     * @return Product
      */
-    public function createProduct(array $data): array
+    public function createProduct(array $data): Product
     {
         $id = $this->repository->create($data);
         $product = $this->repository->findById($id);
         
-        return $this->PriceProduct($product);
+        return $this->buildProduct($product);
     }
 
     /**
      * actualiza un producto existente
      * @param int $id
      * @param array $data campos a actualizar
-     * @return array|null producto actualizado con precio_ars y precio_usd
+     * @return Product|null
      */
-    public function updateProduct(int $id, array $data): ?array
+    public function updateProduct(int $id, array $data): ?Product
     {
         $updated = $this->repository->update($id, $data);
         
@@ -73,7 +74,7 @@ class ProductService
         
         $product = $this->repository->findById($id);
         
-        return $this->PriceProduct($product);
+        return $this->buildProduct($product);
     }
 
     /**
@@ -87,19 +88,21 @@ class ProductService
     }
 
     /**
-     * toma el precio y lo separa en pesos y convierte a dolares
-     * @param array $product datos del producto desde el repositorio
-     * @return array datos del producto
+     * construye un objeto Product desde un array de la base de datos
+     * @param array $product fila de la base de datos
+     * @return Product
      */
-    private function PriceProduct(array $product): array
+    private function buildProduct(array $product): Product
     {
         $precioARS = (float) $product['precio'];
         $precioUSD = $this->converter->convertToUSD($precioARS);
         
-        unset($product['precio']);
-        $product['precio_ars'] = $precioARS;
-        $product['precio_usd'] = $precioUSD;
-        
-        return $product;
+        return new Product(
+            (int) $product['id'],
+            $product['nombre'],
+            $product['descripcion'] ?? null,
+            $precioARS,
+            $precioUSD
+        );
     }
 }

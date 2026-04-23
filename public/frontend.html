@@ -192,14 +192,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>🛍️ Gestión de Productos</h1>
+        <h1>Gestión de Productos</h1>
 
         <!-- Área para mostrar mensajes -->
         <div id="mensajes"></div>
 
         <!-- Sección: Crear Producto -->
         <div class="section">
-            <h2>➕ Crear Nuevo Producto</h2>
+            <h2>Crear Nuevo Producto</h2>
             <form id="form-crear">
                 <div class="form-group">
                     <label>Nombre del Producto:</label>
@@ -219,7 +219,7 @@
 
         <!-- Sección: Editar Producto (oculta por defecto) -->
         <div class="section" id="seccion-editar">
-            <h2>✏️ Editar Producto</h2>
+            <h2>Editar Producto</h2>
             <form id="form-editar">
                 <input type="hidden" id="editar-id">
                 <div class="form-group">
@@ -241,7 +241,7 @@
 
         <!-- Sección: Lista de Productos -->
         <div class="section">
-            <h2>📦 Lista de Productos</h2>
+            <h2>Lista de Productos</h2>
             <div id="lista-productos">
                 <div class="cargando">Cargando productos...</div>
             </div>
@@ -337,8 +337,8 @@
                 html += '<td class="precio-ars">' + formatearPrecioARS(producto.precio_ars) + '</td>';
                 html += '<td class="precio-usd">' + formatearPrecioUSD(producto.precio_usd) + '</td>';
                 html += '<td class="acciones-celda">';
-                html += '<button class="btn-edit" onclick="editarProducto(' + producto.id + ')">✏️ Editar</button>';
-                html += '<button class="btn-delete" onclick="eliminarProducto(' + producto.id + ')">🗑️ Eliminar</button>';
+                html += '<button class="btn-edit" onclick="editarProducto(' + producto.id + ')">Editar</button>';
+                html += '<button class="btn-delete" onclick="eliminarProducto(' + producto.id + ')">Eliminar</button>';
                 html += '</td>';
                 html += '</tr>';
             }

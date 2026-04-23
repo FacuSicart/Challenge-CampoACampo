@@ -2,8 +2,6 @@
 
 namespace App;
 
-use App\Helpers\Response;
-
 class Router
 {
     private array $routes = [];
@@ -29,13 +27,11 @@ class Router
     {
         $method = strtoupper($method);
         $uri = parse_url($uri, PHP_URL_PATH);
-        
-        if ($uri !== '/' && substr($uri, -1) === '/') {
-            $uri = rtrim($uri, '/');
-        }
 
         if (!isset($this->routes[$method])) {
-            Response::error("Método no permitido", 405);
+            http_response_code(405);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Método no permitido'], JSON_UNESCAPED_UNICODE);
             return;
         }
         
@@ -47,7 +43,9 @@ class Router
                 return;
             }
         }
-        Response::error("Ruta no encontrada", 404);
+        http_response_code(404);
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Ruta no encontrada'], JSON_UNESCAPED_UNICODE);
     }
 
     /**

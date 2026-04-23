@@ -1,13 +1,13 @@
 <?php
 
-namespace App\DTO;
+namespace App\Connection;
 
 use PDO;
 use PDOException;
 
-class DTO
+class Connection
 {
-    private static ?DTO $instance = null;
+    private static ?Connection $instance = null;
     private PDO $connection;
 
     private function __construct()
@@ -17,12 +17,12 @@ class DTO
 
     /**
      * obtiene la instancia de la base de datos
-     * @return DTO la instancia
+     * @return Connection la instancia
      */
-    public static function getInstance(): DTO
+    public static function getInstance(): Connection
     {
         if (self::$instance === null) {
-            self::$instance = new DTO();
+            self::$instance = new Connection();
         }
         
         return self::$instance;

@@ -20,7 +20,7 @@ if (file_exists(__DIR__ . '/../.env')) {
 }
 
 use App\Router;
-use App\DTO\DTO;
+use App\Connection\Connection;
 use App\Repositories\ProductRepository;
 use App\Services\PriceConverter;
 use App\Services\ProductService;
@@ -43,13 +43,12 @@ set_error_handler(function ($severity, $message, $file, $line) {
 });
 
 try {
-    $DTO = DTO::getInstance();
-    $productRepository = new ProductRepository($DTO);
+    $connection = Connection::getInstance();
+    $productRepository = new ProductRepository($connection);
     $priceConverter = new PriceConverter();
     $productService = new ProductService($productRepository, $priceConverter);
     $productController = new ProductController($productService);
     
-    // Inicializar router
     $router = new Router();
     
     $router->addRoute('GET', '/', function() {
