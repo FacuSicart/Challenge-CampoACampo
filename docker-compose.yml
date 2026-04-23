@@ -1,0 +1,47 @@
+services:
+  php:
+    build: .
+    container_name: php-api-productos
+    ports:
+      - "8080:80"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=productos_db
+      - DB_USER=root
+      - DB_PASSWORD=rootpassword
+      - PRECIO_USD=1000
+    volumes:
+      - ./src:/var/www/html/src
+      - ./public:/var/www/html/public
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - api-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-productos
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=productos_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - api-network
+
+volumes:
+  mysql-data:
+
+networks:
+  api-network:
+    driver: bridge

@@ -1,0 +1,20 @@
+# Environment variables
+.env
+
+# Docker volumes
+mysql-data/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Composer
+vendor/
+composer.lock
