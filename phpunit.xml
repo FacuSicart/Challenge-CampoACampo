@@ -21,7 +21,7 @@
         <env name="DB_NAME" value="productos_db"/>
         <env name="DB_USER" value="root"/>
         <env name="DB_PASSWORD" value="rootpassword"/>
-        <env name="PRECIO_USD" value="1000"/>
+        <env name="PRECIO_USD" value="1450"/>
     </php>
     <source>
         <include>
